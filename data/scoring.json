@@ -1,0 +1,832 @@
+{
+ "days": [
+  "2026-09-19",
+  "2026-09-20",
+  "2026-09-21",
+  "2026-09-22",
+  "2026-09-23",
+  "2026-09-24",
+  "2026-09-25",
+  "2026-09-26",
+  "2026-09-27",
+  "2026-09-28",
+  "2026-09-29",
+  "2026-09-30",
+  "2026-10-01",
+  "2026-10-02",
+  "2026-10-03",
+  "2026-10-04",
+  "2026-10-05",
+  "2026-10-06",
+  "2026-10-07",
+  "2026-10-08",
+  "2026-10-09",
+  "2026-10-10",
+  "2026-10-11",
+  "2026-10-12",
+  "2026-10-13",
+  "2026-10-14",
+  "2026-10-15",
+  "2026-10-16",
+  "2026-10-17",
+  "2026-10-18",
+  "2026-10-19",
+  "2026-10-20",
+  "2026-10-21",
+  "2026-10-22",
+  "2026-10-23",
+  "2026-10-24",
+  "2026-10-25",
+  "2026-10-26",
+  "2026-10-27",
+  "2026-10-28",
+  "2026-10-29",
+  "2026-10-30",
+  "2026-10-31",
+  "2026-11-01",
+  "2026-11-02",
+  "2026-11-03"
+ ],
+ "labels": {
+  "2026-09-21": {
+   "min": 0,
+   "best": 0.0,
+   "status": "exact_zero",
+   "effort": 0.5,
+   "species": null,
+   "present": null
+  },
+  "2026-09-22": {
+   "min": 1,
+   "best": 1.0,
+   "status": "exact",
+   "effort": 0.55,
+   "species": "Northern Waterthrush",
+   "present": null
+  },
+  "2026-09-23": {
+   "min": 0,
+   "best": 0.0,
+   "status": "exact_zero",
+   "effort": 0.65,
+   "species": null,
+   "present": null
+  },
+  "2026-09-24": {
+   "min": 0,
+   "best": 0.0,
+   "status": "exact_zero",
+   "effort": 0.6,
+   "species": null,
+   "present": null
+  },
+  "2026-09-25": {
+   "min": 3,
+   "best": 3.0,
+   "status": "exact",
+   "effort": 0.75,
+   "species": "Tennessee Warbler, Red-eyed Vireo, Black-and-white Warbler",
+   "present": null
+  },
+  "2026-09-26": {
+   "min": 1,
+   "best": 1.0,
+   "status": "exact",
+   "effort": 0.8,
+   "species": "Yellow Warbler",
+   "present": null
+  },
+  "2026-09-27": {
+   "min": 1,
+   "best": 2.0,
+   "status": "lower_bound",
+   "effort": 0.75,
+   "species": "Red-eyed Vireo",
+   "present": null
+  },
+  "2026-09-28": {
+   "min": 0,
+   "best": 0.0,
+   "status": "exact_zero",
+   "effort": 0.8,
+   "species": null,
+   "present": null
+  },
+  "2026-09-29": {
+   "min": 0,
+   "best": 1.0,
+   "status": "uncertain",
+   "effort": 0.85,
+   "species": null,
+   "present": null
+  },
+  "2026-09-30": {
+   "min": 0,
+   "best": 0.0,
+   "status": "exact_zero",
+   "effort": 0.88,
+   "species": null,
+   "present": null
+  },
+  "2026-10-01": {
+   "min": 0,
+   "best": 0.0,
+   "status": "exact_zero",
+   "effort": 0.85,
+   "species": null,
+   "present": null
+  },
+  "2026-10-02": {
+   "min": 0,
+   "best": 0.0,
+   "status": "exact_zero",
+   "effort": 0.6,
+   "species": null,
+   "present": null
+  },
+  "2026-10-03": {
+   "min": 0,
+   "best": 0.0,
+   "status": "exact_zero",
+   "effort": 0.45,
+   "species": null,
+   "present": null
+  },
+  "2026-10-04": {
+   "min": 0,
+   "best": 0.0,
+   "status": "exact_zero",
+   "effort": 0.65,
+   "species": null,
+   "present": null
+  },
+  "2026-10-05": {
+   "min": 0,
+   "best": 0.0,
+   "status": "exact_zero",
+   "effort": 0.85,
+   "species": null,
+   "present": null
+  },
+  "2026-10-06": {
+   "min": 2,
+   "best": 3.0,
+   "status": "lower_bound",
+   "effort": 0.9,
+   "species": "Red-eyed Vireo x2",
+   "present": null
+  },
+  "2026-10-07": {
+   "min": 0,
+   "best": 0.0,
+   "status": "exact_zero",
+   "effort": 0.85,
+   "species": null,
+   "present": null
+  },
+  "2026-10-08": {
+   "min": 0,
+   "best": 0.0,
+   "status": "exact_zero",
+   "effort": 0.8,
+   "species": null,
+   "present": null
+  },
+  "2026-10-09": {
+   "min": 0,
+   "best": 0.0,
+   "status": "exact_zero",
+   "effort": 0.85,
+   "species": null,
+   "present": null
+  },
+  "2026-10-10": {
+   "min": 0,
+   "best": 1.0,
+   "status": "uncertain",
+   "effort": 0.85,
+   "species": null,
+   "present": null
+  },
+  "2026-10-11": {
+   "min": 0,
+   "best": 0.0,
+   "status": "exact_zero",
+   "effort": 0.45,
+   "species": null,
+   "present": null
+  },
+  "2026-10-12": {
+   "min": 4,
+   "best": 5.0,
+   "status": "exact",
+   "effort": 0.95,
+   "species": "Grey-cheeked Thrush, Red-eyed Vireo x2, Indigo Bunting",
+   "present": "Northern Waterthrush"
+  },
+  "2026-10-13": {
+   "min": 4,
+   "best": 4.0,
+   "status": "exact",
+   "effort": 0.95,
+   "species": "Northern Parula x2, Hooded Warbler, Dickcissel",
+   "present": "Grey-cheeked Thrush, Red-eyed Vireo"
+  },
+  "2026-10-14": {
+   "min": 0,
+   "best": 0.0,
+   "status": "exact_zero",
+   "effort": 0.55,
+   "species": null,
+   "present": "Red-eyed Vireo x2, Northern Parula x2, Hooded Warbler, Northern Waterthrush"
+  },
+  "2026-10-15": {
+   "min": 3,
+   "best": 4.0,
+   "status": "lower_bound",
+   "effort": 0.75,
+   "species": "Red-eyed Vireo x2, Rose-breasted Grosbeak",
+   "present": "Red-eyed Vireo, Hooded Warbler"
+  },
+  "2026-10-16": {
+   "min": 5,
+   "best": 7.0,
+   "status": "lower_bound",
+   "effort": 0.95,
+   "species": "Red-eyed Vireo x3, Philadelphia Vireo, Scarlet Tanager",
+   "present": "Hooded Warbler, Northern Parula, Northern Waterthrush, Red-eyed Vireo x3, Rose-breasted Grosbeak"
+  },
+  "2026-10-17": {
+   "min": 6,
+   "best": 9.0,
+   "status": "lower_bound",
+   "effort": 0.95,
+   "species": "Bobolink x2, Yellow-billed Cuckoo, American Barn Swallow (groupe de 4), White-eyed Vireo, Rose-breasted Grosbeak, possible Red-eyed Vireo x2, possible third Bobolink",
+   "present": "Northern Parula, Northern Waterthrush, Philadelphia Vireo, Red-eyed Vireo, Scarlet Tanager"
+  },
+  "2026-10-18": {
+   "min": 1,
+   "best": 4.0,
+   "status": "lower_bound",
+   "effort": 0.95,
+   "species": "Blackpoll Warbler, possible Rose-breasted Grosbeak, possible Red-eyed Vireo x2",
+   "present": "American Barn Swallow x3, Bobolink x2, Northern Parula, Northern Waterthrush, Philadelphia Vireo, Red-eyed Vireo x6, Rose-breasted Grosbeak, Scarlet Tanager, White-eyed Vireo"
+  },
+  "2026-10-19": {
+   "min": 3,
+   "best": 5.0,
+   "status": "lower_bound",
+   "effort": 0.9,
+   "species": "American Pipit, Blackpoll Warbler, Scarlet Tanager, possible Red-eyed Vireo x2",
+   "present": "American Barn Swallow x3, Blackpoll Warbler, Bobolink x2, Northern Parula, Red-eyed Vireo x7, Rose-breasted Grosbeak x2, Scarlet Tanager, White-eyed Vireo"
+  },
+  "2026-10-20": {
+   "min": 2,
+   "best": 4.0,
+   "status": "lower_bound",
+   "effort": 0.9,
+   "species": "Philadelphia Vireo, Scarlet Tanager, possible Red-eyed Vireo x2",
+   "present": "American Barn Swallow x3, American Pipit, Blackpoll Warbler, Bobolink x2, Northern Parula, Northern Waterthrush, Red-eyed Vireo x5, Rose-breasted Grosbeak x2"
+  },
+  "2026-10-21": {
+   "min": 2,
+   "best": 2.0,
+   "status": "exact",
+   "effort": 0.8,
+   "species": "American Pipit, American Pipit (groupe de 2)",
+   "present": "American Barn Swallow x2, Blackpoll Warbler, Bobolink x2, Northern Parula, Red-eyed Vireo x2, Scarlet Tanager"
+  },
+  "2026-10-22": {
+   "min": 1,
+   "best": 1.0,
+   "status": "exact",
+   "effort": 0.85,
+   "species": "Bobolink",
+   "present": "Bobolink, Northern Parula, Red-eyed Vireo x6, Rose-breasted Grosbeak x2"
+  },
+  "2026-10-23": {
+   "min": 0,
+   "best": 0.0,
+   "status": "exact_zero",
+   "effort": 0.85,
+   "species": null,
+   "present": "Blackpoll Warbler, Bobolink x2, Northern Waterthrush, Red-eyed Vireo x5, Rose-breasted Grosbeak x2"
+  },
+  "2026-10-24": {
+   "min": 0,
+   "best": 0.0,
+   "status": "exact_zero",
+   "effort": 0.8,
+   "species": null,
+   "present": "Bobolink x2, Northern Parula, Northern Waterthrush, Red-eyed Vireo x2"
+  },
+  "2026-10-25": {
+   "min": 0,
+   "best": 0.0,
+   "status": "unknown",
+   "effort": 0.35,
+   "species": null,
+   "present": "Red-eyed Vireo"
+  },
+  "2026-10-26": {
+   "min": 0,
+   "best": 0.0,
+   "status": "exact_zero",
+   "effort": 0.75,
+   "species": null,
+   "present": "American Pipit"
+  },
+  "2026-10-27": {
+   "min": 0,
+   "best": 0.0,
+   "status": "exact_zero",
+   "effort": 0.8,
+   "species": null,
+   "present": "Northern Waterthrush"
+  },
+  "2026-10-28": {
+   "min": 3,
+   "best": 3.0,
+   "status": "exact",
+   "effort": 0.55,
+   "species": "Indigo Bunting x2, Rose-breasted Grosbeak",
+   "present": null
+  },
+  "2026-10-29": {
+   "min": 0,
+   "best": 0.0,
+   "status": "unknown",
+   "effort": 0.65,
+   "species": null,
+   "present": "American Pipit x3"
+  }
+ },
+ "runs": [
+  {
+   "issue_date": "2026-09-18",
+   "window_start": "2026-09-19",
+   "window_end": "2026-09-22",
+   "probability": 0.5966343472833723,
+   "climatology": 0.5144356955380578,
+   "outcome": "unknown",
+   "why": "jours non étiquetés : 09-19, 09-20",
+   "col0": 0,
+   "col1": 3
+  },
+  {
+   "issue_date": "2026-09-19",
+   "window_start": "2026-09-20",
+   "window_end": "2026-09-23",
+   "probability": 0.38047963633037063,
+   "climatology": 0.5144356955380578,
+   "outcome": "unknown",
+   "why": "jours non étiquetés : 09-20",
+   "col0": 1,
+   "col1": 4
+  },
+  {
+   "issue_date": "2026-09-20",
+   "window_start": "2026-09-21",
+   "window_end": "2026-09-24",
+   "probability": 0.40444833304376654,
+   "climatology": 0.5144356955380578,
+   "outcome": "unknown",
+   "why": "effort insuffisant le 09-21, 09-22, 09-23, 09-24 : ce zéro ne prouve rien",
+   "col0": 2,
+   "col1": 5
+  },
+  {
+   "issue_date": "2026-09-21",
+   "window_start": "2026-09-22",
+   "window_end": "2026-09-25",
+   "probability": 0.46735091029171244,
+   "climatology": 0.5144356955380578,
+   "outcome": "hit",
+   "why": "seuil atteint le 2026-09-25",
+   "col0": 3,
+   "col1": 6
+  },
+  {
+   "issue_date": "2026-09-22",
+   "window_start": "2026-09-23",
+   "window_end": "2026-09-26",
+   "probability": 0.4563796640711316,
+   "climatology": 0.5144356955380578,
+   "outcome": "hit",
+   "why": "seuil atteint le 2026-09-25",
+   "col0": 4,
+   "col1": 7
+  },
+  {
+   "issue_date": "2026-09-23",
+   "window_start": "2026-09-24",
+   "window_end": "2026-09-27",
+   "probability": 0.4234748769666215,
+   "climatology": 0.5144356955380578,
+   "outcome": "hit",
+   "why": "seuil atteint le 2026-09-25",
+   "col0": 5,
+   "col1": 8
+  },
+  {
+   "issue_date": "2026-09-24",
+   "window_start": "2026-09-25",
+   "window_end": "2026-09-28",
+   "probability": 0.3401850389134207,
+   "climatology": 0.5144356955380578,
+   "outcome": "hit",
+   "why": "seuil atteint le 2026-09-25",
+   "col0": 6,
+   "col1": 9
+  },
+  {
+   "issue_date": "2026-09-25",
+   "window_start": "2026-09-26",
+   "window_end": "2026-09-29",
+   "probability": 0.2580423920280638,
+   "climatology": 0.5144356955380578,
+   "outcome": "miss",
+   "why": "fenêtre entièrement couverte, aucun jour au seuil",
+   "col0": 7,
+   "col1": 10
+  },
+  {
+   "issue_date": "2026-09-26",
+   "window_start": "2026-09-27",
+   "window_end": "2026-09-30",
+   "probability": 0.37022577016777564,
+   "climatology": 0.5144356955380578,
+   "outcome": "miss",
+   "why": "fenêtre entièrement couverte, aucun jour au seuil",
+   "col0": 8,
+   "col1": 11
+  },
+  {
+   "issue_date": "2026-09-27",
+   "window_start": "2026-09-28",
+   "window_end": "2026-10-01",
+   "probability": 0.3045746560027237,
+   "climatology": 0.5144356955380578,
+   "outcome": "miss",
+   "why": "fenêtre entièrement couverte, aucun jour au seuil",
+   "col0": 9,
+   "col1": 12
+  },
+  {
+   "issue_date": "2026-09-28",
+   "window_start": "2026-09-29",
+   "window_end": "2026-10-02",
+   "probability": 0.3006008771441815,
+   "climatology": 0.5144356955380578,
+   "outcome": "unknown",
+   "why": "effort insuffisant le 10-02 : ce zéro ne prouve rien",
+   "col0": 10,
+   "col1": 13
+  },
+  {
+   "issue_date": "2026-09-29",
+   "window_start": "2026-09-30",
+   "window_end": "2026-10-03",
+   "probability": 0.2814166418467357,
+   "climatology": 0.5144356955380578,
+   "outcome": "unknown",
+   "why": "effort insuffisant le 10-02, 10-03 : ce zéro ne prouve rien",
+   "col0": 11,
+   "col1": 14
+  },
+  {
+   "issue_date": "2026-09-30",
+   "window_start": "2026-10-01",
+   "window_end": "2026-10-04",
+   "probability": 0.3381255717197964,
+   "climatology": 0.5144356955380578,
+   "outcome": "unknown",
+   "why": "effort insuffisant le 10-02, 10-03, 10-04 : ce zéro ne prouve rien",
+   "col0": 12,
+   "col1": 15
+  },
+  {
+   "issue_date": "2026-10-01",
+   "window_start": "2026-10-02",
+   "window_end": "2026-10-05",
+   "probability": 0.5586573796895478,
+   "climatology": 0.5144356955380578,
+   "outcome": "unknown",
+   "why": "effort insuffisant le 10-02, 10-03, 10-04 : ce zéro ne prouve rien",
+   "col0": 13,
+   "col1": 16
+  },
+  {
+   "issue_date": "2026-10-02",
+   "window_start": "2026-10-03",
+   "window_end": "2026-10-06",
+   "probability": 0.45789597645188757,
+   "climatology": 0.5144356955380578,
+   "outcome": "unknown",
+   "why": "effort insuffisant le 10-03, 10-04 : ce zéro ne prouve rien",
+   "col0": 14,
+   "col1": 17
+  },
+  {
+   "issue_date": "2026-10-03",
+   "window_start": "2026-10-04",
+   "window_end": "2026-10-07",
+   "probability": 0.22769947307533614,
+   "climatology": 0.5144356955380578,
+   "outcome": "unknown",
+   "why": "effort insuffisant le 10-04 : ce zéro ne prouve rien",
+   "col0": 15,
+   "col1": 18
+  },
+  {
+   "issue_date": "2026-10-04",
+   "window_start": "2026-10-05",
+   "window_end": "2026-10-08",
+   "probability": 0.2726361119215232,
+   "climatology": 0.5144356955380578,
+   "outcome": "miss",
+   "why": "fenêtre entièrement couverte, aucun jour au seuil",
+   "col0": 16,
+   "col1": 19
+  },
+  {
+   "issue_date": "2026-10-05",
+   "window_start": "2026-10-06",
+   "window_end": "2026-10-09",
+   "probability": 0.37951483319957374,
+   "climatology": 0.5144356955380578,
+   "outcome": "miss",
+   "why": "fenêtre entièrement couverte, aucun jour au seuil",
+   "col0": 17,
+   "col1": 20
+  },
+  {
+   "issue_date": "2026-10-06",
+   "window_start": "2026-10-07",
+   "window_end": "2026-10-10",
+   "probability": 0.3340030606404063,
+   "climatology": 0.5144356955380578,
+   "outcome": "miss",
+   "why": "fenêtre entièrement couverte, aucun jour au seuil",
+   "col0": 18,
+   "col1": 21
+  },
+  {
+   "issue_date": "2026-10-07",
+   "window_start": "2026-10-08",
+   "window_end": "2026-10-11",
+   "probability": 0.432488083749032,
+   "climatology": 0.5144356955380578,
+   "outcome": "unknown",
+   "why": "effort insuffisant le 10-11 : ce zéro ne prouve rien",
+   "col0": 19,
+   "col1": 22
+  },
+  {
+   "issue_date": "2026-10-08",
+   "window_start": "2026-10-09",
+   "window_end": "2026-10-12",
+   "probability": 0.6288364893790175,
+   "climatology": 0.5144356955380578,
+   "outcome": "hit",
+   "why": "seuil atteint le 2026-10-12",
+   "col0": 20,
+   "col1": 23
+  },
+  {
+   "issue_date": "2026-10-09",
+   "window_start": "2026-10-10",
+   "window_end": "2026-10-13",
+   "probability": 0.6946239980901422,
+   "climatology": 0.5144356955380578,
+   "outcome": "hit",
+   "why": "seuil atteint le 2026-10-12, 2026-10-13",
+   "col0": 21,
+   "col1": 24
+  },
+  {
+   "issue_date": "2026-10-10",
+   "window_start": "2026-10-11",
+   "window_end": "2026-10-14",
+   "probability": 0.7291591522168948,
+   "climatology": 0.5144356955380578,
+   "outcome": "hit",
+   "why": "seuil atteint le 2026-10-12, 2026-10-13",
+   "col0": 22,
+   "col1": 25
+  },
+  {
+   "issue_date": "2026-10-11",
+   "window_start": "2026-10-12",
+   "window_end": "2026-10-15",
+   "probability": 0.6466623042275923,
+   "climatology": 0.5144356955380578,
+   "outcome": "hit",
+   "why": "seuil atteint le 2026-10-12, 2026-10-13, 2026-10-15",
+   "col0": 23,
+   "col1": 26
+  },
+  {
+   "issue_date": "2026-10-12",
+   "window_start": "2026-10-13",
+   "window_end": "2026-10-16",
+   "probability": 0.41972514388221405,
+   "climatology": 0.5144356955380578,
+   "outcome": "hit",
+   "why": "seuil atteint le 2026-10-13, 2026-10-15, 2026-10-16",
+   "col0": 24,
+   "col1": 27
+  },
+  {
+   "issue_date": "2026-10-13",
+   "window_start": "2026-10-14",
+   "window_end": "2026-10-17",
+   "probability": 0.47843277919926,
+   "climatology": 0.5144356955380578,
+   "outcome": "hit",
+   "why": "seuil atteint le 2026-10-15, 2026-10-16, 2026-10-17",
+   "col0": 25,
+   "col1": 28
+  },
+  {
+   "issue_date": "2026-10-14",
+   "window_start": "2026-10-15",
+   "window_end": "2026-10-18",
+   "probability": 0.39806534669874627,
+   "climatology": 0.5144356955380578,
+   "outcome": "hit",
+   "why": "seuil atteint le 2026-10-15, 2026-10-16, 2026-10-17",
+   "col0": 26,
+   "col1": 29
+  },
+  {
+   "issue_date": "2026-10-15",
+   "window_start": "2026-10-16",
+   "window_end": "2026-10-19",
+   "probability": 0.3636713930280652,
+   "climatology": 0.5144356955380578,
+   "outcome": "hit",
+   "why": "seuil atteint le 2026-10-16, 2026-10-17, 2026-10-19",
+   "col0": 27,
+   "col1": 30
+  },
+  {
+   "issue_date": "2026-10-16",
+   "window_start": "2026-10-17",
+   "window_end": "2026-10-20",
+   "probability": 0.6103443947974256,
+   "climatology": 0.5144356955380578,
+   "outcome": "hit",
+   "why": "seuil atteint le 2026-10-17, 2026-10-19",
+   "col0": 28,
+   "col1": 31
+  },
+  {
+   "issue_date": "2026-10-17",
+   "window_start": "2026-10-18",
+   "window_end": "2026-10-21",
+   "probability": 0.49883575484462206,
+   "climatology": 0.5144356955380578,
+   "outcome": "hit",
+   "why": "seuil atteint le 2026-10-19",
+   "col0": 29,
+   "col1": 32
+  },
+  {
+   "issue_date": "2026-10-18",
+   "window_start": "2026-10-19",
+   "window_end": "2026-10-22",
+   "probability": 0.48250162798757784,
+   "climatology": 0.5144356955380578,
+   "outcome": "hit",
+   "why": "seuil atteint le 2026-10-19",
+   "col0": 30,
+   "col1": 33
+  },
+  {
+   "issue_date": "2026-10-19",
+   "window_start": "2026-10-20",
+   "window_end": "2026-10-23",
+   "probability": 0.4710297279627692,
+   "climatology": 0.5150753768844221,
+   "outcome": "miss",
+   "why": "fenêtre entièrement couverte, aucun jour au seuil",
+   "col0": 31,
+   "col1": 34
+  },
+  {
+   "issue_date": "2026-10-20",
+   "window_start": "2026-10-21",
+   "window_end": "2026-10-24",
+   "probability": 0.322389317876181,
+   "climatology": 0.5150753768844221,
+   "outcome": "miss",
+   "why": "fenêtre entièrement couverte, aucun jour au seuil",
+   "col0": 32,
+   "col1": 35
+  },
+  {
+   "issue_date": "2026-10-21",
+   "window_start": "2026-10-22",
+   "window_end": "2026-10-25",
+   "probability": 0.3978771595995626,
+   "climatology": 0.5150753768844221,
+   "outcome": "unknown",
+   "why": "effort insuffisant le 10-25 : ce zéro ne prouve rien",
+   "col0": 33,
+   "col1": 36
+  },
+  {
+   "issue_date": "2026-10-22",
+   "window_start": "2026-10-23",
+   "window_end": "2026-10-26",
+   "probability": 0.46198664097975795,
+   "climatology": 0.5150753768844221,
+   "outcome": "unknown",
+   "why": "effort insuffisant le 10-25 : ce zéro ne prouve rien",
+   "col0": 34,
+   "col1": 37
+  },
+  {
+   "issue_date": "2026-10-23",
+   "window_start": "2026-10-24",
+   "window_end": "2026-10-27",
+   "probability": 0.4764945306753635,
+   "climatology": 0.5150753768844221,
+   "outcome": "unknown",
+   "why": "effort insuffisant le 10-25 : ce zéro ne prouve rien",
+   "col0": 35,
+   "col1": 38
+  },
+  {
+   "issue_date": "2026-10-24",
+   "window_start": "2026-10-25",
+   "window_end": "2026-10-28",
+   "probability": 0.5937651148073567,
+   "climatology": 0.5150753768844221,
+   "outcome": "hit",
+   "why": "seuil atteint le 2026-10-28",
+   "col0": 36,
+   "col1": 39
+  },
+  {
+   "issue_date": "2026-10-25",
+   "window_start": "2026-10-26",
+   "window_end": "2026-10-29",
+   "probability": 0.7310349839169045,
+   "climatology": 0.5150753768844221,
+   "outcome": "hit",
+   "why": "seuil atteint le 2026-10-28",
+   "col0": 37,
+   "col1": 40
+  },
+  {
+   "issue_date": "2026-10-26",
+   "window_start": "2026-10-27",
+   "window_end": "2026-10-30",
+   "probability": 0.7022070655721474,
+   "climatology": 0.5150753768844221,
+   "outcome": "hit",
+   "why": "seuil atteint le 2026-10-28 — fenêtre encore ouverte, mais le verdict est acquis",
+   "col0": 38,
+   "col1": 41
+  },
+  {
+   "issue_date": "2026-10-27",
+   "window_start": "2026-10-28",
+   "window_end": "2026-10-31",
+   "probability": 0.6852037901077623,
+   "climatology": 0.5150753768844221,
+   "outcome": "hit",
+   "why": "seuil atteint le 2026-10-28 — fenêtre encore ouverte, mais le verdict est acquis",
+   "col0": 39,
+   "col1": 42
+  },
+  {
+   "issue_date": "2026-10-28",
+   "window_start": "2026-10-29",
+   "window_end": "2026-11-01",
+   "probability": 0.7055798243636752,
+   "climatology": 0.5150753768844221,
+   "outcome": "unknown",
+   "why": "jours non étiquetés : 10-30, 10-31, 11-01",
+   "col0": 40,
+   "col1": 43
+  },
+  {
+   "issue_date": "2026-10-30",
+   "window_start": "2026-10-31",
+   "window_end": "2026-11-03",
+   "probability": 0.5389228947666481,
+   "climatology": 0.5150753768844221,
+   "outcome": "unknown",
+   "why": "jours non étiquetés : 10-31, 11-01, 11-02, 11-03",
+   "col0": 42,
+   "col1": 45
+  }
+ ],
+ "clim": 0.5150753768844221,
+ "threshold": 3,
+ "minEffort": 0.7,
+ "generated_from": "db/forecaster.db"
+}
