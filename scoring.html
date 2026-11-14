@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scoring saison 2026</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* One shared calendar grid for both panels. The whole point of this page is
+   that the window bars line up with the day they are being judged against,
+   so the columns must be identical in both. */
+.sc-wrap { --cols: 28; }
+.sc-grid {
+  display: grid;
+  grid-template-columns: 150px repeat(var(--cols), minmax(0, 1fr));
+  align-items: center; column-gap: 1px;
+}
+.sc-axis { font-size: 0.6rem; color: var(--muted); text-align: center;
+           font-variant-numeric: tabular-nums; line-height: 1.1; }
+.sc-axis .mon { color: var(--ink2); }
+.sc-rowhead { font-size: 0.7rem; color: var(--ink2); text-align: right;
+              padding-right: 10px; font-variant-numeric: tabular-nums;
+              white-space: nowrap; }
+
+/* ---- observed arrivals ---- */
+.sc-obs { height: 86px; position: relative; display: flex; align-items: flex-end;
+          justify-content: center; }
+.sc-obs .bar { width: 68%; border-radius: 3px 3px 0 0; background: var(--accent); }
+.sc-obs .none { height: 2px; background: var(--grid); width: 68%; }
+.sc-obs.weak::after {
+  content: ""; position: absolute; inset: 0;
+  background: repeating-linear-gradient(45deg, transparent 0 3px,
+              rgba(137,135,129,0.22) 3px 6px);
+}
+.sc-thresh { position: absolute; left: 150px; right: 0; border-top: 1px dashed var(--warn);
+             opacity: 0.7; }
+.sc-threshlab { position: absolute; right: 2px; font-size: 0.6rem; color: var(--warn);
+                transform: translateY(-120%); }
+
+/* ---- forecast window spans ---- */
+.sc-span { height: 13px; border-radius: 3px; position: relative; }
+.sc-span.event   { background: #3987e5; }
+.sc-span.none    { background: #d95926; }
+.sc-span.unknown { background: var(--grid);
+  background-image: repeating-linear-gradient(45deg, transparent 0 3px,
+                    rgba(137,135,129,0.35) 3px 6px); }
+.sc-prob { font-size: 0.66rem; color: var(--ink2); font-variant-numeric: tabular-nums;
+           padding-left: 7px; white-space: nowrap; }
+.sc-prob .hi { color: var(--ink); font-weight: 600; }
+.sc-cell { height: 13px; }
+.sc-row:hover .sc-rowhead { color: var(--ink); }
+.sc-clim { border-left: 1px solid var(--ink2); opacity: 0.5; }
+
+.sc-note { font-size: 0.74rem; color: var(--ink2); line-height: 1.5; max-width: 86ch; }
+.sc-warn { border-left: 2px solid var(--warn); padding: 10px 12px;
+           background: rgba(250,178,25,0.06); border-radius: 0 6px 6px 0;
+           font-size: 0.78rem; color: var(--ink2); line-height: 1.5; }
+.sc-stats { display: flex; gap: 26px; flex-wrap: wrap; margin: 4px 0 14px; }
+.sc-stat .v { font-size: 1.5rem; color: var(--ink); }
+.sc-stat .k { font-size: 0.64rem; color: var(--muted); text-transform: uppercase;
+              letter-spacing: 0.05em; }
+.sc-sep { height: 1px; background: var(--border); margin: 18px 0 14px; }
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-id">
+    <span class="dot" aria-hidden="true"></span>
+    <h1>Scoring&nbsp;2026</h1>
+    <span class="bar-sub">comment chaque prévision s'est comportée</span>
+  </div>
+  <div class="bar-meta"><a href="/app/">← tableau de bord</a></div>
+</header>
+
+<main class="sc-wrap">
+
+  <section class="card">
+    <h3>Ce que la saison a produit, et ce que chaque fenêtre a attrapé</h3>
+    <p class="hint">Les deux panneaux partagent le même axe calendaire. Chaque barre
+      horizontale est la fenêtre de 4 jours d'une prévision, placée sur les jours
+      qu'elle couvre — on voit donc directement contre quoi elle est jugée.</p>
+
+    <div class="sc-stats" id="stats"></div>
+
+    <div id="chart"></div>
+
+    <div class="legend" id="legend"></div>
+
+    <div class="sc-sep"></div>
+    <div class="sc-warn" id="caveat"></div>
+  </section>
+
+</main>
+
+<script>
+const S = {
+  blue: '#3987e5', orange: '#d95926',
+  ink: '#ffffff', ink2: '#c3c2b7', muted: '#898781', grid: '#2c2c2a',
+};
+const MONTHS = ['janv.','févr.','mars','avr.','mai','juin','juil.','août',
+                'sept.','oct.','nov.','déc.'];
+
+function el(tag, cls, txt) {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (txt !== undefined) n.textContent = txt;
+  return n;
+}
+const utc = (iso) => new Date(iso + 'T00:00:00Z');
+
+fetch('data/scoring.json').then(r => r.json()).then(render)
+  .catch(e => { document.getElementById('chart').textContent =
+    'Données indisponibles : ' + e.message; });
+
+function render(d) {
+  const chart = document.getElementById('chart');
+  const nDays = d.days.length;
+  chart.style.setProperty('--cols', nDays);
+
+  /* ---------------- panel A: observed arrivals ---------------- */
+  const maxObs = Math.max(3, ...Object.values(d.labels).map(l => l.min));
+  const gridA = el('div', 'sc-grid sc-wrap');
+  gridA.style.setProperty('--cols', nDays);
+  gridA.style.position = 'relative';
+  gridA.appendChild(Object.assign(el('div', 'sc-rowhead'),
+    { textContent: 'nouveaux néarctiques' }));
+
+  d.days.forEach(day => {
+    const lab = d.labels[day];
+    const cell = el('div', 'sc-obs');
+    if (lab) {
+      if (lab.effort < d.minEffort) cell.classList.add('weak');
+      if (lab.min > 0) {
+        const b = el('div', 'bar');
+        b.style.height = (lab.min / maxObs * 78) + 'px';
+        cell.appendChild(b);
+      } else {
+        cell.appendChild(el('div', 'none'));
+      }
+      cell.title = `${day} — ${lab.min} nouveau(x)`
+        + (lab.best !== lab.min ? ` (jusqu'à ${lab.best})` : '')
+        + `\nstatut ${lab.status}, effort ${lab.effort.toFixed(2)}`
+        + (lab.effort < d.minEffort ? ' — sous le plancher de 0,70, zéro inutilisable' : '')
+        + (lab.species ? `\n${lab.species}` : '');
+    } else {
+      cell.classList.add('weak');
+      cell.title = `${day} — pas de log`;
+    }
+    gridA.appendChild(cell);
+  });
+  // threshold line at 3
+  const th = el('div', 'sc-thresh');
+  th.style.bottom = (3 / maxObs * 78) + 'px';
+  th.appendChild(Object.assign(el('span', 'sc-threshlab'),
+    { textContent: 'seuil : 3 nouveaux' }));
+  gridA.appendChild(th);
+  chart.appendChild(gridA);
+
+  /* ---------------- axis ---------------- */
+  const axis = el('div', 'sc-grid');
+  axis.style.setProperty('--cols', nDays);
+  axis.appendChild(el('div', 'sc-rowhead'));
+  let lastMon = null;
+  d.days.forEach(day => {
+    const dd = utc(day);
+    const c = el('div', 'sc-axis');
+    c.appendChild(el('div', '', String(dd.getUTCDate())));
+    const m = MONTHS[dd.getUTCMonth()];
+    c.appendChild(el('div', 'mon', m !== lastMon ? m : ' '));
+    lastMon = m;
+    axis.appendChild(c);
+  });
+  chart.appendChild(axis);
+  chart.appendChild(Object.assign(el('div'), { style: 'height:14px' }));
+
+  /* ---------------- panel B: one row per forecast ---------------- */
+  d.runs.forEach(r => {
+    const row = el('div', 'sc-grid sc-row');
+    row.style.setProperty('--cols', nDays);
+    const above = r.probability >= d.clim;
+    const head = el('div', 'sc-rowhead',
+      utc(r.issue_date).getUTCDate() + ' ' + MONTHS[utc(r.issue_date).getUTCMonth()]);
+    row.appendChild(head);
+
+    for (let i = 0; i < nDays; i++) {
+      if (i < r.col0 || i > r.col1) { row.appendChild(el('div', 'sc-cell')); continue; }
+      if (i === r.col0) {
+        const span = el('div', 'sc-span ' + r.outcome);
+        span.style.gridColumn = `span ${r.col1 - r.col0 + 1}`;
+        span.title = `prévision émise le ${r.issue_date}\n`
+          + `fenêtre ${r.window_start} → ${r.window_end}\n`
+          + `probabilité ${(r.probability * 100).toFixed(1)} % `
+          + `(normale ${(d.clim * 100).toFixed(1)} %)\n`
+          + `résultat : ${({event: 'événement observé',
+                            none: 'aucun événement',
+                            unknown: 'indéterminé'})[r.outcome]} — ${r.why}`;
+        row.appendChild(span);
+        i = r.col1;
+      }
+    }
+    const p = el('div', 'sc-prob');
+    const strong = el('span', above ? 'hi' : '', (r.probability * 100).toFixed(1) + ' %');
+    p.appendChild(strong);
+    p.appendChild(document.createTextNode(above ? '  ▲' : '  ▽'));
+    row.appendChild(p);
+    chart.appendChild(row);
+  });
+
+  /* ---------------- stats ---------------- */
+  const n = { event: 0, none: 0, unknown: 0 };
+  d.runs.forEach(r => n[r.outcome]++);
+  const scored = d.runs.filter(r => r.outcome !== 'unknown');
+  const ev = scored.filter(r => r.outcome === 'event');
+  const no = scored.filter(r => r.outcome === 'none');
+  const mean = a => a.reduce((s, r) => s + r.probability, 0) / (a.length || 1);
+  const stats = [
+    [n.event, 'fenêtres avec événement'],
+    [n.none, 'fenêtres sans événement'],
+    [n.unknown, 'non vérifiables'],
+    [(mean(ev) * 100).toFixed(1) + ' %', 'p moyenne, événement'],
+    [(mean(no) * 100).toFixed(1) + ' %', 'p moyenne, aucun'],
+    [((mean(ev) - mean(no)) * 100).toFixed(1) + ' pts', 'écart'],
+  ];
+  const host = document.getElementById('stats');
+  stats.forEach(([v, k]) => {
+    const s = el('div', 'sc-stat');
+    s.appendChild(el('div', 'v', String(v)));
+    s.appendChild(el('div', 'k', k));
+    host.appendChild(s);
+  });
+
+  /* ---------------- legend ---------------- */
+  const lg = document.getElementById('legend');
+  const sw = (bg, txt, extra) => {
+    const it = el('span', 'legend-item');
+    const s = el('span', 'sw');
+    s.style.background = bg;
+    if (extra) s.style.backgroundImage = extra;
+    it.appendChild(s); it.appendChild(el('span', 'sw-label', txt));
+    lg.appendChild(it);
+  };
+  sw(S.blue, 'la fenêtre contenait une journée ≥ 3');
+  sw(S.orange, 'aucune journée ≥ 3, couverture suffisante');
+  sw(S.grid, 'indéterminé (jours non étiquetés ou effort < 0,70)',
+     'repeating-linear-gradient(45deg,transparent 0 3px,rgba(137,135,129,.35) 3px 6px)');
+  const note = el('div', 'legend-note');
+  note.textContent = 'La couleur dit ce qui s\'est passé, pas si la prévision '
+    + 'était bonne. Une fenêtre orange annoncée à 23 % est une réussite du modèle, '
+    + 'pas un échec. ▲ marque les prévisions au-dessus de la climatologie ('
+    + (d.clim * 100).toFixed(1) + ' %), ▽ en dessous.';
+  lg.appendChild(note);
+
+  /* ---------------- the caveat that matters ---------------- */
+  document.getElementById('caveat').innerHTML =
+    '<b>Les quatre fenêtres bleues décrivent un seul et même événement.</b> '
+    + 'Regardez où elles se superposent : toutes couvrent le 25 septembre, la seule '
+    + 'journée de la saison à avoir atteint 3 nouveaux néarctiques. Le protocole de '
+    + 'contrôle des biais (point 8) dit que les jours adjacents d\'une même arrivée '
+    + 'ne sont pas indépendants — l\'effectif réel de cette mesure est donc de '
+    + '<b>1 événement</b>, pas de 10 fenêtres. L\'écart de probabilité va dans le bon '
+    + 'sens, mais il n\'est pas distinguable du hasard sur un échantillon pareil. '
+    + 'Les prévisions les plus fortes de la saison (62,9 à 72,9 %, du 8 au 11 octobre) '
+    + 'couvrent des fenêtres encore non étiquetées : le test intéressant reste à venir. '
+    + '<br><br><i>Étiquettes provisoires, pas encore importées dans la base.</i>';
+}
+</script>
+</body>
+</html>
