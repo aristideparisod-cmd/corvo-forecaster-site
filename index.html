@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en" data-palette="#3987e5,#d95926,#199e70">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Corvo Fallout Forecast</title>
+<!-- Leaflet is vendored (BSD-2-Clause, dashboard/vendor/leaflet/LICENSE) and
+     the basemap is bundled public-domain Natural Earth vector data, so this
+     page issues no third-party requests and works with no connectivity. The
+     vendored files are byte-identical to leaflet@1.9.4 on unpkg. -->
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-id">
+    <span class="dot" aria-hidden="true"></span>
+    <h1>Corvo&nbsp;Fallout</h1>
+    <span class="bar-sub">American landbird arrival forecast</span>
+  </div>
+  <div class="bar-meta" id="bar-meta"></div>
+</header>
+
+<main>
+
+  <!-- ─────────────────────────── the headline ─────────────────────────── -->
+  <!-- The question IS the heading: it labels the section, so there is no
+       second title to keep in sync with it. -->
+  <section class="card hero" aria-labelledby="question">
+    <div class="hero-left">
+      <h2 id="question" class="q">&nbsp;</h2>
+
+      <!-- TODAY first, because it is what you want on opening the page. It is
+           the window probability of the most recent cycle whose window covers
+           today -- the sharpest statement available about this date. It is NOT
+           P(fallout today): the model only ever says "at least one day in
+           these four". The caption says so. -->
+      <div class="fig-today">
+        <p class="fig-label" id="today-label">Today</p>
+        <div class="hero-fig">
+          <span class="prob" id="prob-today">--</span>
+          <span class="prob-unit">%</span>
+        </div>
+        <p class="fig-note" id="today-note"></p>
+      </div>
+
+      <div class="fig-window">
+        <p class="fig-label">The next four days</p>
+        <div class="hero-fig hero-fig-sm">
+          <span class="prob prob-sm" id="prob">--</span>
+          <span class="prob-unit">%</span>
+        </div>
+      </div>
+      <div class="hero-cmp" id="cmp"></div>
+      <div class="gauge" role="img" id="gauge-wrap" aria-label="probability against climatology">
+        <div class="gauge-track">
+          <div class="gauge-fill" id="gauge"></div>
+          <div class="gauge-clim" id="gauge-clim"><span>normal</span></div>
+        </div>
+        <div class="gauge-scale"><span>0%</span><span>50%</span><span>100%</span></div>
+      </div>
+      <p class="window" id="window"></p>
+
+      <!-- The same four days, one at a time, from the daily model. The window
+           figure above says whether the period is worth anything; this says
+           WHICH day. Placed after the window's own comparison line and gauge,
+           so that line is not read as describing these bars: the two come
+           from different models with different climatologies. -->
+      <div id="days-ahead" class="days-ahead"></div>
+    </div>
+
+    <!-- What a date like today has produced before. Beside the forecast
+         rather than at the foot of the page, because it is the other half of
+         the same question: the model says what the weather allows, this says
+         what the date has historically delivered. -->
+    <div class="hero-right">
+      <div id="on-this-date" class="otd"></div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── the wind field ───────────────────────── -->
+  <section class="card map-card" aria-labelledby="map-h">
+    <div class="card-head">
+      <div>
+        <h3 id="map-h">The weather this forecast was based on</h3>
+        <p class="hint" id="map-sub"></p>
+      </div>
+      <div class="controls">
+        <div class="seg" role="group" aria-label="pressure level">
+          <button data-level="925" class="on">925 hPa</button>
+          <button data-level="850">850 hPa</button>
+        </div>
+        <button id="play" class="btn" aria-label="play or pause the animation">Play</button>
+        <label class="chk"><input type="checkbox" id="routes-on" checked> Routes</label>
+        <label class="chk"><input type="checkbox" id="particles-on" checked> Wind</label>
+      </div>
+    </div>
+
+    <div class="map-wrap">
+      <div id="map"></div>
+      <canvas id="speed-canvas" aria-hidden="true"></canvas>
+      <canvas id="wind-canvas" aria-hidden="true"></canvas>
+      <div id="readout" class="readout" hidden></div>
+      <div class="map-legend" id="map-legend"></div>
+      <div id="map-note" class="map-note" hidden></div>
+    </div>
+
+    <div class="timebar">
+      <input type="range" id="hour" min="0" max="0" step="1" value="0"
+             aria-label="forecast hour">
+      <div class="timebar-labels">
+        <span id="hour-label">--</span>
+        <span id="valid-label" class="muted"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────────────────────── the season ───────────────────────────── -->
+  <section class="card" aria-labelledby="season-h">
+    <div class="card-head">
+      <div>
+        <h3 id="season-h">This season, day by day</h3>
+        <p class="hint">One bar per day: P(that day reaches 3 new Nearctic
+          landbirds), from the daily model. Click a day to load the wind
+          behind it.</p>
+      </div>
+      <div id="season-meta" class="hint"></div>
+    </div>
+    <div id="season" class="season"></div>
+    <div id="season-legend" class="legend"></div>
+    <div id="verif-note" class="note"></div>
+  </section>
+
+  <!-- ─────────────────────────── the record ──────────────────────────── -->
+  <section class="card" aria-labelledby="hist-h">
+    <div class="card-head">
+      <div>
+        <h3 id="hist-h">The record</h3>
+        <p class="hint">Every documented autumn. Height is the total of new
+          Nearctic landbirds, the figure below it the number of days recorded —
+          a low season may be a quiet one or simply an unwatched one.</p>
+      </div>
+      <div class="hist-controls">
+        <!-- Two islands, two very different records. Corvo is a labelled
+             series with effort scores and reliable zeros; Flores is a set of
+             arrival reports with no coverage measure, so it carries no zeros
+             at all. The caption under the bars says which you are reading. -->
+        <div class="seg" role="group" aria-label="island">
+          <button type="button" class="on" data-site="corvo">Corvo</button>
+          <button type="button" data-site="flores">Flores</button>
+        </div>
+        <div id="hist-meta" class="hint"></div>
+      </div>
+    </div>
+    <div id="seasons" class="seasons-bar"></div>
+    <div id="calendars" class="calendars"></div>
+    <div id="day-detail" class="day-detail" hidden></div>
+  </section>
+
+  <!-- ──────────────────────── the model's own inputs ─────────────────── -->
+  <section class="card" aria-labelledby="strip-h">
+    <div class="card-head">
+      <div>
+        <h3 id="strip-h">Corridor strip</h3>
+        <p class="hint">What the twelve model inputs look like, day by day.
+          Day&nbsp;1 is tomorrow.</p>
+      </div>
+    </div>
+    <div id="strip" class="strip"></div>
+    <div id="strip-legend" class="legend"></div>
+  </section>
+
+  <!-- ─────────────────────────── the caveats ─────────────────────────── -->
+  <section class="card" aria-labelledby="skill-h">
+    <h3 id="skill-h">How much to trust this</h3>
+    <div id="skill" class="skill"></div>
+    <div id="prov" class="prov"></div>
+  </section>
+
+</main>
+
+<footer>
+  <span id="foot"></span>
+</footer>
+
+<script src="vendor/leaflet/leaflet.js"></script>
+<!-- Snapshot mode: api.js rewrites /v1/... to api/v1/....json -->
+  <script>window.API_BASE = "api";</script>
+  <script src="js/api.js"></script>
+<script src="js/scales.js"></script>
+<script src="js/basemap.js"></script>
+<script src="js/wind.js"></script>
+<script src="js/panels.js"></script>
+<script src="js/history.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
