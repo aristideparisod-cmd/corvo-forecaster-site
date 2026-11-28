@@ -1,0 +1,782 @@
+/* ============================================================================
+   Corvo Fallout Forecast — dashboard stylesheet
+   Dark-surface map application. Mobile-first, one breakpoint at 900px.
+   Loads after leaflet.css, so the leaflet overrides sit near the end.
+   ========================================================================= */
+
+/* ------------------------------------------------------------------ tokens */
+:root {
+  --plane:      #0d0d0d;                  /* page background              */
+  --surface:    #1a1a19;                  /* card + overlay surface       */
+  --ink:        #ffffff;                  /* primary text                 */
+  --ink2:       #c3c2b7;                  /* secondary text               */
+  --muted:      #898781;                  /* labels, units, captions      */
+  --grid:       #2c2c2a;                  /* empty track / gridline       */
+  --baseline:   #383835;                  /* axis baseline, strong rule   */
+  --border:     rgba(255,255,255,0.10);
+  --accent:     #3987e5;
+  --accent-dim: #1c5cab;
+  --good:       #0ca30c;
+  --warn:       #fab219;
+
+  --gutter: 16px;
+  --r-card: 12px;  --r-sm: 8px;  --r-xs: 4px;
+  --maxw: 1280px;
+  --font: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --wash: rgba(255,255,255,0.06);         /* hover wash                   */
+  color-scheme: dark;
+}
+
+/* -------------------------------------------------------------------- base */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { overflow-x: hidden; }
+
+body {
+  margin: 0;
+  background: var(--plane);
+  color: var(--ink);
+  font: 16px/1.45 var(--font);
+  -webkit-text-size-adjust: 100%;
+}
+
+h1, h2, h3 { margin: 0; font-weight: 600; line-height: 1.2; }
+h1 { font-size: 1rem; letter-spacing: -0.01em; }
+h3 { font-size: 0.95rem; }
+p { margin: 0; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+canvas, img { display: block; max-width: 100%; }
+[hidden] { display: none !important; }
+
+/* one visible focus ring for every interactive affordance */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ------------------------------------------------------------------ header */
+header.bar {
+  position: sticky; top: 0; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px var(--gutter);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.bar-id { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.bar-id .dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.bar-sub {
+  color: var(--muted); font-size: 0.75rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.bar-meta {
+  flex: none; text-align: right;
+  color: var(--muted); font-size: 0.72rem; font-variant-numeric: tabular-nums;
+}
+@media (max-width: 559px) { .bar-sub { display: none; } }
+
+/* ------------------------------------------------------------- main layout */
+main {
+  display: flex; flex-direction: column; gap: 16px;
+  max-width: var(--maxw); margin: 0 auto;
+  padding: 16px var(--gutter);
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-card);
+  padding: 16px;
+}
+.card-head {
+  display: flex; flex-wrap: wrap; align-items: flex-start;
+  justify-content: space-between; gap: 10px; margin-bottom: 12px;
+}
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+/* -------------------------------------------------------------------- hero */
+.hero { display: flex; flex-direction: column; gap: 20px; }
+.hero-left, .hero-right { min-width: 0; }
+.q { font-size: 0.8rem; font-weight: 400; color: var(--ink2); }
+
+/* baseline alignment keeps the % beside the number, not above it */
+.hero-fig { display: flex; align-items: baseline; gap: 4px; margin: 6px 0 4px; }
+#prob {
+  font-size: clamp(3.2rem, 12vw, 5.2rem); font-weight: 600;
+  line-height: 1; letter-spacing: -0.03em; color: var(--ink);
+}
+.prob-unit { font-size: 1.25rem; font-weight: 500; color: var(--ink2); }
+
+.hero-cmp { font-size: 0.82rem; color: var(--ink2); }
+.hero-cmp strong { font-weight: 600; color: var(--ink2); }
+.hero-cmp strong.up { color: var(--good); }
+.hero-cmp strong.flat { color: var(--ink2); }
+.hero-cmp strong.down { color: var(--warn); }
+.hero-cmp .arrow { display: inline-block; font-size: 0.78em; line-height: 1; }
+.window { margin-top: 10px; font-size: 0.78rem; color: var(--muted); }
+
+/* ------------------------------------------------------------------- gauge */
+.gauge { margin-top: 14px; padding-top: 14px; }   /* headroom: clim label */
+.gauge-track { position: relative; height: 10px; border-radius: var(--r-xs); background: var(--grid); }
+.gauge-fill {
+  position: absolute; inset: 0 auto 0 0; width: 0;
+  background: var(--accent);
+  border-radius: 0 var(--r-xs) var(--r-xs) 0;     /* right end only */
+  transition: width 400ms ease;
+}
+.gauge-clim { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink2); }
+.gauge-clim span {                                 /* label above the marker */
+  position: absolute; bottom: calc(100% + 3px); left: 50%; transform: translateX(-50%);
+  font-size: 0.6rem; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--muted); white-space: nowrap;
+}
+.gauge-scale {
+  display: flex; justify-content: space-between; margin-top: 6px;
+  font-size: 0.65rem; color: var(--muted); font-variant-numeric: tabular-nums;
+}
+
+/* -------------------------------------------------- corridor strip heatmap */
+.strip {
+  display: grid;
+  grid-template-columns: minmax(84px, auto) repeat(4, 1fr);
+  gap: 2px;                      /* the 2px surface gutter is load-bearing */
+  margin-top: 10px;
+}
+.strip-col-head {
+  align-self: end; padding-bottom: 2px; text-align: center;
+  font-size: 0.7rem; color: var(--muted); font-variant-numeric: tabular-nums;
+}
+.strip-row-head {
+  display: flex; flex-direction: column; align-items: flex-end;
+  justify-content: center; padding-right: 6px; text-align: right;
+  font-size: 0.75rem; color: var(--ink2); font-variant-numeric: tabular-nums;
+}
+.strip-row-head small { font-size: 0.65rem; color: var(--muted); }
+.strip-cell {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 44px; border-radius: var(--r-xs);
+  background: var(--grid);                       /* JS sets inline */
+}
+.strip-cell .v {
+  font-size: 0.8rem; font-variant-numeric: tabular-nums;
+  color: var(--ink); text-shadow: 0 1px 2px rgba(0,0,0,0.45);
+}
+.strip-cell.ring { box-shadow: inset 0 0 0 2px var(--ink); }  /* over threshold */
+
+/* ---------------------------------------------------------------- map card */
+.map-wrap {
+  /* Taller and closer to square: the corridor runs NE-SW across the
+     basin, so a wide letterbox wastes width on Europe and crops the very
+     latitudes the routes occupy. */
+  position: relative; height: clamp(460px, 74vh, 820px);
+  overflow: hidden; border-radius: var(--r-sm);
+  background: var(--plane); border: 1px solid var(--border);
+}
+#map { position: absolute; inset: 0; z-index: 1; }
+#wind-canvas {
+  position: absolute; inset: 0; z-index: 2;
+  width: 100%; height: 100%; pointer-events: none;
+}
+/* shared floating-overlay treatment */
+.readout, .map-legend, .map-note {
+  position: absolute; z-index: 3;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  border: 1px solid var(--border); border-radius: var(--r-sm);
+  padding: 8px; color: var(--ink2); pointer-events: none;
+}
+.readout {
+  top: 8px; left: 8px; max-width: min(220px, calc(100% - 16px));
+  font-size: 0.72rem; font-variant-numeric: tabular-nums;
+}
+.map-legend { bottom: 8px; left: 8px; font-size: 0.68rem; line-height: 1.5; }
+.map-note {
+  top: 8px; right: 8px; max-width: min(240px, calc(100% - 16px));
+  font-size: 0.68rem; color: var(--muted);
+}
+.legend-row { display: flex; align-items: center; gap: 6px; }
+.sw {
+  flex: none; display: inline-block; width: 14px; height: 10px;
+  border-radius: 2px; background: var(--grid);   /* JS sets inline */
+}
+
+/* ---------------------------------------------------------------- time bar */
+.timebar { display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+input#hour {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 20px; margin: 0; background: transparent; cursor: pointer;
+}
+input#hour::-webkit-slider-runnable-track { height: 4px; border-radius: 2px; background: var(--grid); }
+input#hour::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 14px; height: 14px; margin-top: -5px;
+  border: 0; border-radius: 50%; background: var(--accent);
+}
+input#hour::-moz-range-track { height: 4px; border-radius: 2px; background: var(--grid); }
+input#hour::-moz-range-thumb { width: 14px; height: 14px; border: 0; border-radius: 50%; background: var(--accent); }
+input#hour:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.timebar-labels {
+  display: flex; justify-content: space-between; gap: 8px;
+  font-size: 0.75rem; color: var(--ink2); font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------- season bar chart */
+.season {
+  display: flex; gap: 4px; overflow-x: auto; padding: 4px 2px 2px;
+  scrollbar-width: thin; -webkit-overflow-scrolling: touch;
+  border-bottom: 1px solid var(--baseline);        /* chart axis baseline */
+}
+.season-bar {
+  flex: 0 0 auto; min-width: 34px;
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 3px; background: none; cursor: pointer;
+  border: 1px solid transparent; border-radius: var(--r-xs);
+}
+.season-bar:hover { background: var(--wash); }
+.season-bar.active { border-color: var(--accent); }
+.sb-track {
+  position: relative; height: 70px; overflow: hidden;
+  border-radius: var(--r-xs); background: rgba(44,44,42,0.55);
+}
+.sb-fill {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 0;
+  background: var(--accent-dim);
+  border-radius: var(--r-xs) var(--r-xs) 0 0;      /* top corners only */
+  transition: height 300ms ease;
+}
+.sb-clim { position: absolute; left: 0; right: 0; height: 1px; background: var(--ink2); }
+.sb-day {
+  font-size: 0.58rem; line-height: 1.15; text-align: center;
+  color: var(--muted); font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------ flat legend */
+.legend {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;
+  font-size: 0.7rem; color: var(--muted);
+}
+.legend > * { display: inline-flex; align-items: center; gap: 5px; }
+
+/* ------------------------------------------------------------ skill tiles */
+.skill {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px; margin: 12px 0;
+}
+.metric { padding: 10px; border: 1px solid var(--border); border-radius: var(--r-sm); }
+.metric-v { font-size: 1.3rem; font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+.metric-k {
+  margin-top: 2px; font-size: 0.68rem; letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--muted);
+}
+.skill .caveat { grid-column: 1 / -1; font-size: 0.8rem; color: var(--ink2); }
+
+/* ------------------------------------------------------------- provenance */
+.prov {
+  font-family: var(--mono); font-size: 0.7rem; line-height: 1.6;
+  color: var(--muted); overflow-wrap: anywhere;
+}
+.prov > * {
+  display: flex; flex-wrap: wrap; gap: 4px 10px;
+  padding: 2px 0; border-top: 1px solid var(--border);
+}
+.prov > *:first-child { border-top: 0; }
+
+/* ------------------------------------------------------------------- note */
+.note {
+  margin-top: 12px; padding: 10px; font-size: 0.78rem; color: var(--ink2);
+  border-left: 2px solid var(--warn); border-radius: 0 var(--r-xs) var(--r-xs) 0;
+  background: rgba(250,178,25,0.06);
+}
+.note:empty { display: none; }
+
+/* --------------------------------------------------------------- controls */
+.seg { display: inline-flex; overflow: hidden; border: 1px solid var(--border); border-radius: 999px; }
+.seg button {
+  padding: 5px 11px; border: 0; background: transparent; color: var(--ink2);
+  font: inherit; font-size: 0.74rem; cursor: pointer; font-variant-numeric: tabular-nums;
+}
+.seg button + button { border-left: 1px solid var(--border); }
+.seg button:hover { background: var(--wash); }
+.seg button.on { background: var(--accent); color: var(--plane); font-weight: 600; }
+.btn {
+  padding: 5px 12px; border: 1px solid var(--border); border-radius: 999px;
+  background: transparent; color: var(--ink2); font: inherit;
+  font-size: 0.74rem; cursor: pointer;
+}
+.btn:hover { background: var(--wash); color: var(--ink); }
+.chk {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.75rem; color: var(--ink2); cursor: pointer;
+}
+.chk input { accent-color: var(--accent); margin: 0; }
+
+/* ----------------------------------------------------------------- footer */
+footer {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: 8px; max-width: var(--maxw); margin: 0 auto;
+  padding: 14px var(--gutter) 28px; border-top: 1px solid var(--border);
+  font-size: 0.7rem; color: var(--muted);
+}
+
+/* -------------------------------------------------------------- utilities */
+.hint { font-size: 0.75rem; color: var(--muted); }
+.muted { color: var(--muted); }
+
+/* ------------------------------------------------ breakpoint: two columns */
+@media (min-width: 900px) {
+  .card { padding: 20px; }
+  h1 { font-size: 1.05rem; }
+  .hero { flex-direction: row; gap: 28px; }
+  .hero-left { flex: 0 0 44%; max-width: 44%; }
+  .hero-right { flex: 1 1 auto; }
+}
+
+/* ------------------------------------------------------ leaflet, darkened */
+.leaflet-container { background: var(--plane); font-family: var(--font); }
+.leaflet-control-attribution,
+.leaflet-container .leaflet-control-attribution {
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  color: var(--muted); font-size: 0.6rem; padding: 1px 5px;
+}
+.leaflet-control-attribution a { color: var(--ink2); }
+.leaflet-bar, .leaflet-bar a {
+  background: var(--surface); color: var(--ink2); border-color: var(--border);
+}
+.leaflet-bar a:hover { background: var(--grid); color: var(--ink); }
+
+/* -------------------------------------------------------- reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─── late additions: two classes the JS injects ──────────────────────────
+   .ring-sw  legend swatch for the "ring = >= 8 m/s" threshold marker, which
+             is a second (non-colour) channel on route points and strip cells.
+   .no-build a season bar whose GEFS cycle failed to build. Rendered as a
+             visible empty slot, never silently skipped -- a failed build is
+             a published record (ARCHITECTURE.md section 3). */
+.sw.ring-sw {
+  background: transparent;
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+.season-bar.no-build .sb-track {
+  background: repeating-linear-gradient(
+    45deg, var(--grid) 0 3px, transparent 3px 6px);
+}
+.season-bar.no-build .sb-day { color: var(--warn); }
+
+/* ─── season axis: labelled by forecast window ────────────────────────────
+   Bars carry the window they predict ("19–22"), not the cycle date, so they
+   need a touch more width than a bare day number and a second line for the
+   month tick that appears only when the window crosses into a new one. */
+.season-bar { min-width: 44px; }
+.sb-mon {
+  font-size: 0.6rem; color: var(--muted); text-align: center;
+  line-height: 1.2; min-height: 0.75rem; letter-spacing: 0.02em;
+}
+.sb-day { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* ─── corridor strip: dialled back ────────────────────────────────────────
+   It sat beside the hero figure at full saturation with large numerals and
+   competed with it for attention. The twelve numbers are the model's input
+   and deserve to be legible, not loud: smaller cells, smaller type, and the
+   colour carried at reduced opacity so the fill reads as a wash rather than
+   a block. */
+.strip { gap: 2px; opacity: 0.94; }
+.strip-cell {
+  min-height: 34px;
+  border-radius: 3px;
+  filter: saturate(0.72);
+}
+.strip-cell .v { font-size: 0.72rem; font-weight: 400; }
+.strip-cell.ring { box-shadow: inset 0 0 0 1.5px var(--ink); }
+.strip-row-head { font-size: 0.68rem; }
+.strip-row-head small { font-size: 0.6rem; }
+.strip-col-head { font-size: 0.64rem; }
+.hero-right h3 { font-size: 0.86rem; font-weight: 600; color: var(--ink2); }
+.hero-right .hint { font-size: 0.7rem; }
+
+/* ─── per-day forecast axis ───────────────────────────────────────────────
+   One slot per calendar day instead of one per overlapping 4-day window, so
+   the axis can be read as a calendar. */
+.day-bar {
+  flex: 0 0 auto; min-width: 26px; cursor: pointer;
+  padding: 2px 1px; border-radius: var(--r-sm);
+  border: 1px solid transparent;
+}
+.day-bar:hover { background: rgba(255, 255, 255, 0.04); }
+.day-bar:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.day-bar.active { border-color: var(--accent); }
+.day-bar.is-today .sb-day { color: var(--ink); font-weight: 600; }
+.day-bar.is-today .sb-track { box-shadow: inset 0 0 0 1px var(--baseline); }
+/* Days still ahead of the window are forecast, not history: lighten them. */
+.day-bar.is-future .sb-fill { opacity: 0.8; }
+.day-bar.is-future .sb-day { font-style: italic; }
+
+/* Spread of the four cycles that each saw this day. */
+.sb-range {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  width: 3px; border-radius: 2px;
+  background: var(--accent); opacity: 0.45;
+}
+.sb-range-sw { background: var(--accent); opacity: 0.45; }
+
+/* ─── legends ─────────────────────────────────────────────────────────────
+   A swatch row answers "which colour means what"; it cannot answer "what is
+   this chart actually claiming". The note carries that. */
+.legend-row { align-items: center; row-gap: 4px; }
+.legend-title {
+  font-size: 0.68rem; color: var(--ink2); font-weight: 600;
+  min-width: 110px; letter-spacing: 0.01em;
+}
+.sw-label { font-size: 0.66rem; color: var(--muted); }
+.legend-note {
+  font-size: 0.7rem; color: var(--muted); line-height: 1.45;
+  margin-top: 6px; max-width: 72ch;
+}
+
+/* ─── corrections after looking at the rendered page ──────────────────────
+   The active cycle covers four days; ringing all four made one selection
+   look like four separate ones. The window is now an underline and only the
+   day it opens keeps the ring. */
+.day-bar.active { border-color: var(--accent); }
+.day-bar.in-window:not(.active) { border-color: transparent; }
+.day-bar.in-window { box-shadow: inset 0 -2px 0 0 var(--accent); }
+
+/* The spread mark was accent-on-accent and vanished into the fill. */
+.sb-range { opacity: 0.95; width: 2px; }
+.sb-range::before,
+.sb-range::after {
+  content: ""; position: absolute; left: -2px; width: 6px; height: 1px;
+  background: inherit;
+}
+.sb-range::before { top: 0; }
+.sb-range::after { bottom: 0; }
+.sb-range-sw { opacity: 1; }
+
+/* A legend note is a sentence, not a chip: give it its own line. */
+.legend-note { flex-basis: 100%; }
+.legend { flex-direction: row; flex-wrap: wrap; }
+
+/* ─── legend layout, after looking at it again ────────────────────────────
+   The note carried flex-basis:100% but also max-width:72ch, so it still fit
+   beside the swatch row and never broke to its own line. min-width forces
+   the break; the note is short enough to read full width at this size.
+   And .legend-item had no internal gap, so each swatch touched its label. */
+.legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.legend-note {
+  min-width: 100%; max-width: none;
+  padding-top: 2px; border-top: 1px solid var(--border); margin-top: 8px;
+}
+
+/* ─── observed outcome, under each forecast day ───────────────────────────
+   Four states, not two. The model's target is ">= 3 new Nearctic landbirds",
+   so a day needs to say which side of the threshold it fell AND whether that
+   is knowable: a zero from a day nobody could bird carries no evidence and
+   must not look like a zero from a day sixteen birders worked. */
+.sb-obs {
+  font-size: 0.62rem; text-align: center; line-height: 1.5;
+  font-variant-numeric: tabular-nums; border-radius: 3px;
+  margin: 3px 2px 1px; min-height: 15px;
+}
+.sb-obs.event, .sb-flores.event {                      /* threshold met */
+  background: var(--accent); color: var(--plane); font-weight: 600;
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+}
+.sb-obs.some, .sb-flores.some {                       /* arrivals, but below threshold */
+  background: color-mix(in srgb, var(--accent) 34%, transparent);
+  color: var(--ink);
+}
+.sb-obs.zero, .sb-flores.zero {                       /* a zero that means something */
+  color: var(--muted); background: var(--grid);
+}
+.sb-flores.weak,
+.sb-obs.weak,                        /* a zero that proves nothing */
+.sb-obs.no-label {
+  color: var(--muted);
+  background: repeating-linear-gradient(45deg, transparent 0 2px,
+              rgba(137,135,129,0.3) 2px 4px);
+}
+.sb-obs.no-label { color: var(--baseline); }
+.sw.obs-event { box-shadow: inset 0 0 0 1.5px var(--ink); }
+.sw.obs-weak {
+  background-image: repeating-linear-gradient(45deg, transparent 0 2px,
+                    rgba(137,135,129,0.45) 2px 4px);
+}
+
+/* ─── past hours on the wind map ──────────────────────────────────────────
+   The slider now runs -48h to +96h. Hours before the cycle are not forecast
+   but observed, and the label says so; mark them so the distinction is
+   visible at a glance and not only on reading. */
+#hour-label.is-past { color: var(--warn); }
+#hour-label.is-past::before { content: "◀ "; }
+
+/* ─── filled wind-speed field ─────────────────────────────────────────────
+   Particle streaks alone show a filament, not a structure: you cannot see
+   where the jet is without watching the animation for several seconds. A
+   filled speed field — the thing that makes the standard meteorological
+   charts readable at a glance — goes underneath them. It needs its own
+   canvas: the particle layer fades itself with destination-in each frame,
+   which would eat a static raster drawn on the same surface. */
+#speed-canvas {
+  position: absolute; inset: 0; z-index: 2;
+  width: 100%; height: 100%; pointer-events: none;
+  opacity: 0.62;                       /* coastlines stay legible beneath */
+}
+#wind-canvas { z-index: 3; }
+
+/* ─── the historical record ───────────────────────────────────────────────
+   Three views over one dataset: seasons, a year's calendars, and one day. */
+
+/* Season bars. The day count sits under each year because a low bar may mean
+   a quiet autumn or an unwatched one, and only the two together say which. */
+.seasons-bar {
+  display: flex; gap: 3px; overflow-x: auto; padding: 4px 0 2px;
+  align-items: flex-end;
+}
+.yr {
+  flex: 0 0 auto; min-width: 42px; background: none; border: 1px solid transparent;
+  border-radius: var(--r-sm); padding: 3px 2px; cursor: pointer; color: inherit;
+  font: inherit;
+}
+.yr:hover { background: rgba(255,255,255,0.05); }
+.yr:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.yr.active { border-color: var(--accent); background: rgba(57,135,229,0.10); }
+.yr-bar {
+  height: 54px; display: flex; align-items: flex-end;
+  background: var(--grid); border-radius: 3px; overflow: hidden;
+}
+.yr-fill { width: 100%; background: var(--accent); border-radius: 3px 3px 0 0; }
+.yr-y { font-size: 0.64rem; color: var(--ink2); text-align: center; margin-top: 3px;
+        font-variant-numeric: tabular-nums; }
+.yr-d { font-size: 0.56rem; color: var(--muted); text-align: center;
+        font-variant-numeric: tabular-nums; }
+
+/* Month calendars */
+.calendars { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 14px; }
+.cal-month { flex: 1 1 280px; min-width: 260px; }
+.cal-title { font-size: 0.78rem; color: var(--ink2); margin-bottom: 6px; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.cal-dow { font-size: 0.6rem; color: var(--muted); text-align: center; padding-bottom: 2px; }
+.cal-pad { height: 34px; }
+.cal-day {
+  height: 34px; border-radius: 4px; border: 1px solid transparent;
+  background: var(--surface); color: var(--ink2); cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  font: inherit; line-height: 1; position: relative;
+}
+.cal-day:hover:not(:disabled) { border-color: var(--accent); }
+.cal-day:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.cal-day:disabled { cursor: default; }
+.cal-n { font-size: 0.62rem; font-variant-numeric: tabular-nums; }
+.cal-c { font-size: 0.68rem; font-weight: 600; color: var(--ink); }
+.cal-day.event { background: var(--accent); color: var(--plane); }
+.cal-day.event .cal-c { color: var(--plane); }
+.cal-day.some  { background: color-mix(in srgb, var(--accent) 32%, transparent); }
+.cal-day.zero  { background: var(--grid); }
+.cal-day.weak  { background: repeating-linear-gradient(45deg, transparent 0 2px,
+                 rgba(137,135,129,0.3) 2px 4px); }
+.cal-day.absent, .cal-day.no-label { background: none; color: var(--baseline); }
+/* A dot marks a day whose species are named, so you know where to click. */
+.cal-day.has-sp::after {
+  content: ""; position: absolute; bottom: 3px; width: 3px; height: 3px;
+  border-radius: 50%; background: var(--ink);
+}
+.cal-day.event.has-sp::after { background: var(--plane); }
+
+/* One day, expanded */
+.day-detail {
+  margin-top: 16px; padding: 14px; border: 1px solid var(--border);
+  border-radius: var(--r-sm); background: rgba(255,255,255,0.02);
+}
+.dd-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.dd-date { font-size: 0.95rem; color: var(--ink); }
+.dd-n { font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; }
+.dd-n.event { background: var(--accent); color: var(--plane); font-weight: 600; }
+.dd-n.some  { background: color-mix(in srgb, var(--accent) 34%, transparent); color: var(--ink); }
+.dd-n.zero, .dd-n.weak, .dd-n.no-label { background: var(--grid); color: var(--muted); }
+.dd-species { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 8px; }
+.dd-sp {
+  font-size: 0.72rem; padding: 3px 9px; border-radius: 11px;
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  color: var(--ink); border: 1px solid var(--border);
+}
+.dd-meta { display: flex; gap: 16px; flex-wrap: wrap; font-size: 0.68rem;
+           color: var(--muted); margin-top: 6px; }
+.dd-kv b { color: var(--ink2); font-weight: 500; }
+.dd-flag { margin-top: 8px; font-size: 0.7rem; color: var(--warn); }
+.dd-notes { margin-top: 8px; font-size: 0.72rem; color: var(--ink2); line-height: 1.5; }
+
+/* On this date, across the years */
+.otd-head h3 { margin: 0 0 2px; }
+.otd-rows { display: flex; flex-direction: column; gap: 3px; margin-top: 12px; }
+.otd-row {
+  display: grid; grid-template-columns: 48px 34px 1fr; align-items: center;
+  gap: 10px; padding: 4px 8px; border-radius: 4px; background: var(--surface);
+  border-left: 3px solid var(--grid);
+}
+.otd-row.event { border-left-color: var(--accent); }
+.otd-row.some  { border-left-color: color-mix(in srgb, var(--accent) 50%, transparent); }
+.otd-row.weak  { border-left-color: var(--muted); }
+.otd-y { font-size: 0.74rem; color: var(--ink2); font-variant-numeric: tabular-nums; }
+.otd-n { font-size: 0.86rem; color: var(--ink); text-align: right;
+         font-variant-numeric: tabular-nums; }
+.otd-row.event .otd-n { font-weight: 600; }
+.otd-sp { display: flex; flex-wrap: wrap; gap: 5px; }
+
+/* ─── present but not new ───────────────────────────────────────────────
+   A filled chip means a bird ARRIVED. A standing bird gets an outline chip
+   on a dashed border and muted ink: present on the island, no arrival to
+   its name. The two must not be confusable at a glance -- the project's
+   whole label discipline is that one is evidence and the other is not. */
+.dd-sp.pres {
+  background: none;
+  border: 1px dashed var(--baseline);
+  color: var(--muted);
+}
+.dd-sub {
+  margin: 12px 0 0; font-size: 0.68rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+/* A hollow ring, against has-sp's filled dot: species documented, none new. */
+.cal-day.has-pres::after {
+  content: ""; position: absolute; bottom: 3px; width: 3px; height: 3px;
+  border-radius: 50%; border: 1px solid var(--baseline);
+}
+
+/* ─── section titles, made legible ──────────────────────────────────────
+   They were 0.95rem in secondary ink, which read as captions rather than
+   as headings: you could not tell at a glance which block was which. Now
+   they are the size of headings and wear primary ink, and the explanatory
+   line under each stays small so the hierarchy is visible rather than
+   merely present. */
+h3 { font-size: 1.15rem; color: var(--ink); letter-spacing: -0.01em; }
+.card-head h3, .otd-head h3 { font-size: 1.2rem; }
+.card-head .hint, .otd-head .hint { margin-top: 3px; }
+.card > .card-head { margin-bottom: 14px; }
+
+/* ─── "a 13 October, historically" in the hero's right column ───────────
+   Moved up beside the forecast: the model says what the weather allows,
+   this says what the date has actually delivered, and the two belong side
+   by side. Eighteen documented years would otherwise make this column
+   twice the height of the figure beside it, so it scrolls instead of
+   stretching the card. */
+.hero-right .otd { display: flex; flex-direction: column; min-height: 0; }
+.hero-right .otd-rows {
+  max-height: 340px; overflow-y: auto; padding-right: 4px;
+  scrollbar-width: thin; scrollbar-color: var(--baseline) transparent;
+}
+.hero-right .otd-row { grid-template-columns: 42px 28px 1fr; gap: 8px; }
+.hero-right .legend-note { margin-top: 10px; }
+
+@media (min-width: 900px) {
+  /* The figure needs less room than eighteen years of records. */
+  .hero-left { flex: 0 0 38%; max-width: 38%; }
+}
+
+/* The headline figure carries its band colour from Scales.probColor, set
+   inline by panels.js. Nothing is hard-coded here: the ramp lives in one
+   place. This only keeps the number large enough to read as the page's
+   subject. */
+.prob { transition: color 160ms ease; }
+.gauge-fill { transition: width 220ms ease, background-color 160ms ease; }
+
+/* ─── two figures, not one ──────────────────────────────────────────────
+   TODAY is the headline, because it is the question a reader opens the page
+   with. The four-day window keeps its place underneath at a smaller size:
+   still the model's actual output, no longer the first thing read.
+
+   Both wear the same band ramp from Scales.probColor, so a glance compares
+   them directly. */
+.fig-today { margin: 10px 0 2px; }
+.fig-window { margin: 14px 0 6px; padding-top: 12px;
+              border-top: 1px solid var(--border); }
+.fig-label {
+  margin: 0; font-size: 0.7rem; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+#prob-today {
+  font-size: clamp(3.4rem, 13vw, 5.6rem); font-weight: 600;
+  line-height: 1; letter-spacing: -0.03em;
+}
+/* The window figure steps down rather than disappearing: it is the number
+   the model actually emits, and the one the gauge and the comparison line
+   below refer to. */
+#prob { font-size: clamp(1.9rem, 6vw, 2.6rem); }
+.hero-fig-sm .prob-unit { font-size: 0.9rem; }
+.fig-note {
+  margin: 6px 0 0; font-size: 0.68rem; color: var(--muted); line-height: 1.5;
+  max-width: 44ch;
+}
+
+/* ─── the four days ahead, one bar each ─────────────────────────────────
+   The window number says whether the period is worth anything; these say
+   which day. Bars are scaled against the daily climatology, not against
+   each other, so a flat quiet week looks flat instead of being stretched
+   to fill the axis — the commonest way a small chart lies. */
+.days-ahead { margin-top: 12px; }
+.da-row { display: flex; gap: 8px; align-items: flex-end; }
+.da-cell { flex: 1 1 0; min-width: 0; text-align: center; }
+.da-day {
+  font-size: 0.62rem; color: var(--muted); margin-bottom: 4px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.da-track {
+  position: relative; height: 54px; background: var(--grid);
+  border-radius: var(--r-xs); overflow: hidden;
+  display: flex; align-items: flex-end;
+}
+.da-fill { width: 100%; border-radius: var(--r-xs) var(--r-xs) 0 0; min-height: 2px; }
+/* Where the normal sits, so "above normal" is read off the bar rather than
+   worked out from two numbers. */
+.da-clim {
+  position: absolute; left: 0; right: 0; height: 0;
+  border-top: 1px dashed var(--muted); opacity: 0.75;
+}
+.da-val {
+  font-size: 0.72rem; margin-top: 4px; font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+/* ─── Flores, under Corvo ───────────────────────────────────────────────
+   25 km south, same weather, watched by the observer himself. No forecast
+   exists for it, so it contributes only observations — but they are
+   independent evidence about the same airstream, and placing them directly
+   under Corvo's cell lets one vertical be read as "what the flow delivered
+   to both islands".
+
+   Deliberately smaller and outlined: it must not be mistaken for a second
+   Corvo row. A day Flores never covered is blank, never a zero — claiming
+   an absence nobody checked is the one thing this project refuses. */
+.sb-flores {
+  /* Reproduces .sb-obs's box, since Flores no longer borrows that class. */
+  display: flex; align-items: center; justify-content: center;
+  height: 13px; border-radius: 2px; font-variant-numeric: tabular-nums;
+  color: var(--ink); background: var(--grid);
+  margin-top: 2px;
+  font-size: 0.56rem;
+  opacity: 0.9;
+  border: 1px solid var(--baseline);
+}
+.sb-flores.absent {
+  background: none;
+  border-style: dotted;
+  opacity: 0.35;
+}
+
+/* The register's island switch sits beside its caption, which changes with
+   the selection: Corvo is a labelled series with effort scores, Flores a set
+   of arrival reports whose zeros are far fewer and individually justified. */
+.hist-controls {
+  display: flex; flex-direction: column; align-items: flex-end; gap: 6px;
+}
+
+/* ─── a species list that names fewer birds than were counted ───────────
+   Not an error and not hidden: the count is the record, the list is what
+   the source chose to name. Set apart from the species chips so it cannot
+   be mistaken for one, and muted so it does not compete with them. */
+.sp-partial {
+  font-size: 0.66rem; color: var(--muted);
+  padding: 3px 0 3px 2px; white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.sp-partial::before { content: "+ "; opacity: 0.6; }
